@@ -1,6 +1,7 @@
-(defproject com.github.kyleburton/logback-riemann-appender "0.1.0"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject com.github.kyleburton/logback-riemann-appender "0.1.1-SNAPSHOT"
+  :description "Logback Appender that sends events to Riemann"
+  :url "https://github.com/kyleburton/logback-riemann-appender"
+  :lein-release         {:deploy-via :clojars}
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :java-source-paths ["java"]
