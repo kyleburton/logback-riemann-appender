@@ -16,7 +16,6 @@ See `resources/logback.xml` for a full example configuration.
         <Hostname>graphene</Hostname>
       </appender>
       <root level="DEBUG">
-        <appender-ref ref="A1"/>
         <appender-ref ref="R1"/>
       </root>
     </configuration>
