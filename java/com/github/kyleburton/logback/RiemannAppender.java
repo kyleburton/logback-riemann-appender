@@ -63,6 +63,14 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     if (debug) {
       System.err.println(String.format("%s.stop()", this));
     }
+    if (riemannClient != null) {
+      try {
+        riemannClient.disconnect();
+      }
+      catch (IOException ex) {
+        // do nothing, it's ok
+      }
+    }
     super.stop();
   }
 
