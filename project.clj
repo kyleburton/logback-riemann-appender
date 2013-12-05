@@ -5,6 +5,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :java-source-paths ["java"]
+  :javac-options     ["-target" "1.6" "-source" "1.6" "-Xlint:-options"]
   :plugins [[lein-release/lein-release "1.0.5"]
             [lein-swank                "1.4.5"]]
   :dependencies [
