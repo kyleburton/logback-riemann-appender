@@ -1,4 +1,4 @@
-(defproject com.github.kyleburton/logback-riemann-appender "0.1.1-SNAPSHOT"
+(defproject com.github.kyleburton/logback-riemann-appender "0.1.1"
   :description "Logback Appender that sends events to Riemann"
   :url "https://github.com/kyleburton/logback-riemann-appender"
   :lein-release         {:deploy-via :clojars}
