@@ -1,22 +1,24 @@
 package com.github.kyleburton.logback;
 
-import ch.qos.logback.core.LogbackException;
 import ch.qos.logback.core.AppenderBase;
+import ch.qos.logback.core.LogbackException;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.StackTraceElementProxy;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
 
-import com.aphyr.riemann.client.RiemannClient;
-import com.aphyr.riemann.client.UdpTransport;
 import com.aphyr.riemann.client.EventDSL;
+import com.aphyr.riemann.client.RiemannClient;
 import com.aphyr.riemann.client.SynchronousTransport;;
-import com.aphyr.riemann.Proto.Msg;
+import com.aphyr.riemann.client.UdpTransport;
 import com.aphyr.riemann.Proto.Event;
+import com.aphyr.riemann.Proto.Msg;
 
 public class RiemannAppender<E> extends AppenderBase<E> {
   private static final String DEFAULT_PORT = "5555";
@@ -31,6 +33,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   public static AtomicLong timesCalled = new AtomicLong(0);
 
   private static boolean debug = false;
+  // private static boolean debug = true;
 
   private RiemannClient riemannClient = null;
 
@@ -84,6 +87,32 @@ public class RiemannAppender<E> extends AppenderBase<E> {
         hostname);
   }
 
+  private String getStackTraceFromEvent( ILoggingEvent logEvent ) {
+    IThrowableProxy throwable = logEvent.getThrowableProxy();
+    if ( null != throwable && null != throwable.getStackTraceElementProxyArray() ) {
+      StringBuilder sb = new StringBuilder();
+      for ( StackTraceElementProxy elt : throwable.getStackTraceElementProxyArray() ) {
+        sb.append(elt.toString());
+        sb.append("\n");
+      }
+      return sb.toString();
+    }
+
+    if (logEvent.getCallerData() != null) {
+      if (debug) {
+        System.err.println(String.format("%s.append: falling back to appender stacktrace: ", this));
+      }
+      StringBuilder sb = new StringBuilder();
+      for ( StackTraceElement elt : logEvent.getCallerData()) {
+        sb.append(elt);
+        sb.append("\n");
+      }
+      return sb.toString();
+    }
+
+    return null;
+  }
+
   protected synchronized void append(E event) /* throws LogbackException */ {
     timesCalled.incrementAndGet();
     ILoggingEvent logEvent = (ILoggingEvent) event;
@@ -95,16 +124,9 @@ public class RiemannAppender<E> extends AppenderBase<E> {
         state("error").
         attribute("message", logEvent.getFormattedMessage());
 
-      if (logEvent.getCallerData() != null) {
-        if (debug) {
-          System.err.println(String.format("%s.append: adding in stacktrace", this));
-        }
-        StringBuilder sb = new StringBuilder();
-        for ( StackTraceElement elt : logEvent.getCallerData()) {
-          sb.append(elt);
-          sb.append("\n");
-        }
-        rEvent.attribute("stacktrace", sb.toString());
+      String stInfo = getStackTraceFromEvent(logEvent);
+      if (null != stInfo) {
+        rEvent.attribute("stacktrace", stInfo);
       }
 
       try {
@@ -134,7 +156,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     catch (Exception ex) {
       // do nothing
       if (debug) {
-        System.err.println(String.format("%s: Error during append(): %s", ex));
+        System.err.println(String.format("RiemannAppender.append: Error during append(): %s", ex));
         ex.printStackTrace();
       }
     }
