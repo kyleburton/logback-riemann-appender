@@ -77,29 +77,21 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   }
 
   private String getStackTraceFromEvent( ILoggingEvent logEvent ) {
+    String result = null;
     IThrowableProxy throwable = logEvent.getThrowableProxy();
-    if ( null != throwable && null != throwable.getStackTraceElementProxyArray() ) {
-      StringBuilder sb = new StringBuilder();
-      for ( StackTraceElementProxy elt : throwable.getStackTraceElementProxyArray() ) {
-        sb.append(elt.toString());
-        sb.append("\n");
+    if (null != throwable) {
+      String firstLine = String.format("%s: %s\n", throwable.getClassName(), throwable.getMessage());
+      StringBuilder sb = new StringBuilder(firstLine);
+      if (null != throwable.getStackTraceElementProxyArray()) {
+        for ( StackTraceElementProxy elt : throwable.getStackTraceElementProxyArray() ) {
+          sb.append("\t")
+            .append(elt.toString())
+            .append("\n");
+        }
       }
-      return sb.toString();
+      result = sb.toString();
     }
-
-    if (logEvent.getCallerData() != null) {
-      if (debug) {
-        System.err.println(String.format("%s.append: falling back to appender stacktrace: ", this));
-      }
-      StringBuilder sb = new StringBuilder();
-      for ( StackTraceElement elt : logEvent.getCallerData()) {
-        sb.append(elt);
-        sb.append("\n");
-      }
-      return sb.toString();
-    }
-
-    return null;
+    return result;
   }
 
   protected synchronized void append(E event) {
