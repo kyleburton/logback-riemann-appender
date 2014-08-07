@@ -102,7 +102,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     return null;
   }
 
-  protected synchronized void append(E event) /* throws LogbackException */ {
+  protected synchronized void append(E event) {
     timesCalled.incrementAndGet();
     ILoggingEvent logEvent = (ILoggingEvent) event;
     EventDSL rEvent;
@@ -158,16 +158,6 @@ public class RiemannAppender<E> extends AppenderBase<E> {
         ex.printStackTrace(System.err);
       }
     }
-
-    //System.err.println(String.format(
-    //      "RiemannAppender{serviceName=%s;riemannHostname=%s;riemannPort=%s;hostname=%s}",
-    //      serviceName,
-    //      riemannHostname,
-    //      riemannPort,
-    //      hostname));
-
-    //System.err.println("RiemannAppender: event: " + event);
-    //System.err.println("RiemannAppender: event.getClass(): " + event.getClass());
   }
 
 
