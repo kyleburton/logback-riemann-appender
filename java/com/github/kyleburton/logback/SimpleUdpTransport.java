@@ -1,23 +1,19 @@
 // From: https://github.com/aphyr/riemann-java-client/pull/24
 package com.github.kyleburton.logback;
 
-import com.google.protobuf.MessageLite;
+import com.aphyr.riemann.client.SynchronousTransport;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import com.aphyr.riemann.client.SynchronousTransport;
-
-import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 
 public class SimpleUdpTransport implements SynchronousTransport {
 
   public static final int DEFAULT_PORT = 5555;
 
   private volatile DatagramSocket socket;
-  private volatile boolean connected = false;
 
   private final InetSocketAddress address;
 
@@ -52,13 +48,12 @@ public class SimpleUdpTransport implements SynchronousTransport {
 
   @Override
   public boolean isConnected() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
   @Override
   public synchronized void connect() throws IOException {
     socket = new DatagramSocket();
-    connected = true;
   }
 
   @Override
@@ -67,7 +62,6 @@ public class SimpleUdpTransport implements SynchronousTransport {
       socket.close();
     } finally {
       socket = null;
-      connected = false;
     }
   }
 
@@ -78,7 +72,5 @@ public class SimpleUdpTransport implements SynchronousTransport {
   }
 
   @Override
-  public void flush() throws IOException {
-    // Noop
-  }
+  public void flush() throws IOException {}
 }
