@@ -9,6 +9,7 @@ import com.aphyr.riemann.client.RiemannClient;
 import com.aphyr.riemann.client.SynchronousTransport;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RiemannAppender<E> extends AppenderBase<E> {
@@ -109,8 +110,14 @@ public class RiemannAppender<E> extends AppenderBase<E> {
       rEvent = riemannClient.event().
         service(serviceName).
         host(hostname).
-        state("error").
-        attribute("message", logEvent.getFormattedMessage());
+        state(logEvent.getLevel().levelStr).
+        attribute("logger", logEvent.getLoggerName()).
+        description(logEvent.getFormattedMessage()).
+        tags(logEvent.getMarker().getName());
+
+      for (Map.Entry<String, String> entry : logEvent.getMDCPropertyMap().entrySet()) {
+        rEvent.attribute(entry.getKey(), entry.getValue());
+      }
 
       String stInfo = getStackTraceFromEvent(logEvent);
       if (null != stInfo) {
