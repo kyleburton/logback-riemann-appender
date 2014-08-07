@@ -152,7 +152,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
       // do nothing
       if (debug) {
         System.err.println(String.format("RiemannAppender.append: Error during append(): %s", ex));
-        ex.printStackTrace();
+        ex.printStackTrace(System.err);
       }
     }
 
