@@ -112,8 +112,11 @@ public class RiemannAppender<E> extends AppenderBase<E> {
         host(hostname).
         state(logEvent.getLevel().levelStr).
         attribute("logger", logEvent.getLoggerName()).
-        description(logEvent.getFormattedMessage()).
-        tags(logEvent.getMarker().getName());
+        description(logEvent.getFormattedMessage());
+
+      if (logEvent.getMarker() != null) {
+        rEvent.tags(logEvent.getMarker().getName());
+      }
 
       for (Map.Entry<String, String> entry : logEvent.getMDCPropertyMap().entrySet()) {
         rEvent.attribute(entry.getKey(), entry.getValue());
