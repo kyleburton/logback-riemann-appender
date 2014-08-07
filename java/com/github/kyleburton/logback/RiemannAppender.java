@@ -1,24 +1,15 @@
 package com.github.kyleburton.logback;
 
-import ch.qos.logback.core.AppenderBase;
-import ch.qos.logback.core.LogbackException;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.List;
-
+import ch.qos.logback.core.AppenderBase;
 import com.aphyr.riemann.client.EventDSL;
 import com.aphyr.riemann.client.RiemannClient;
-import com.aphyr.riemann.client.SynchronousTransport;;
-import com.aphyr.riemann.client.UdpTransport;
-import com.aphyr.riemann.Proto.Event;
-import com.aphyr.riemann.Proto.Msg;
+import com.aphyr.riemann.client.SynchronousTransport;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RiemannAppender<E> extends AppenderBase<E> {
   private static final String DEFAULT_PORT = "5555";
@@ -28,12 +19,10 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   private String riemannHostname = DEFAULT_HOST;
   private String riemannPort     = DEFAULT_PORT;
   private String hostname        = "*no-host-name*";
-  private int    maxBufferSize   = 16384;
 
   public static AtomicLong timesCalled = new AtomicLong(0);
 
   private static boolean debug = false;
-  // private static boolean debug = true;
 
   private RiemannClient riemannClient = null;
 
@@ -43,8 +32,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
         System.err.println(String.format("%s.start()", this));
       }
       SynchronousTransport transport = new SimpleUdpTransport(riemannHostname, Integer.parseInt(riemannPort));
-      final RiemannClient cli = new RiemannClient(transport);
-      riemannClient = cli;
+      riemannClient = new RiemannClient(transport);
       if (debug) {
         System.err.println(String.format("%s.start: connecting", this));
       }
@@ -190,6 +178,6 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   }
 
   public void setDebug (String s) {
-    debug = "true" == s;
+    debug = "true".equals(s);
   }
 }
