@@ -30,21 +30,21 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   public void start() {
     try {
       if (debug) {
-        System.err.println(String.format("%s.start()", this));
+        printError("%s.start()", this);
       }
       SynchronousTransport transport = new SimpleUdpTransport(riemannHostname, Integer.parseInt(riemannPort));
       riemannClient = new RiemannClient(transport);
       if (debug) {
-        System.err.println(String.format("%s.start: connecting", this));
+        printError("%s.start: connecting", this);
       }
       riemannClient.connect();
       if (debug) {
-        System.err.println(String.format("%s.start: connected", this));
+        printError("%s.start: connected", this);
       }
     }
     catch (IOException ex) {
       if (debug) {
-        System.err.println(String.format("%s: Error initializing: %s", this, ex));
+        printError("%s: Error initializing: %s", this, ex);
       }
       throw new RuntimeException(ex);
     }
@@ -53,7 +53,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
 
   public void stop() {
     if (debug) {
-      System.err.println(String.format("%s.stop()", this));
+      printError("%s.stop()", this);
     }
     if (riemannClient != null) {
       try {
@@ -121,20 +121,17 @@ public class RiemannAppender<E> extends AppenderBase<E> {
 
       try {
         if (debug) {
-          System.err.println(String.format("%s.append: sending riemann event: %s", this, rEvent));
+          printError("%s.append: sending riemann event: %s", this, rEvent);
         }
         rEvent.send();
         if (debug) {
-          System.err.println(String.format("%s.append(logEvent): sent to riemann %s:%s", this, riemannHostname, riemannPort));
+          printError("%s.append(logEvent): sent to riemann %s:%s", this, riemannHostname, riemannPort);
         }
       }
       catch (Exception ex) {
         if (debug) {
-          System.err.println(String.format(
-                "%s: Error sending event %s",
-                this,
-                ex));
-          ex.printStackTrace();
+          printError("%s: Error sending event %s", this, ex);
+          ex.printStackTrace(System.err);
         }
 
         riemannClient.reconnect();
@@ -146,12 +143,15 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     catch (Exception ex) {
       // do nothing
       if (debug) {
-        System.err.println(String.format("RiemannAppender.append: Error during append(): %s", ex));
+        printError("RiemannAppender.append: Error during append(): %s", ex);
         ex.printStackTrace(System.err);
       }
     }
   }
 
+  private void printError(String format, Object... params) {
+    System.err.println(String.format(format, params));
+  }
 
   public void setServiceName (String s) {
     serviceName = s;
