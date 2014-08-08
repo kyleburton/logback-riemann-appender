@@ -8,8 +8,7 @@
   :javac-options     ["-target" "1.6" "-source" "1.6" "-Xlint:-options"]
   :plugins [[lein-release/lein-release "1.0.5"]
             [lein-swank                "1.4.5"]]
-  :profiles {:dev {:resource-paths ["dev-resources"]
-                   :debug true}}
+  :profiles {:dev {:resource-paths ["dev-resources"]}}
   :dependencies [
     [org.clojure/clojure            "1.5.1"]
     [com.aphyr/riemann-java-client  "0.2.8"]
