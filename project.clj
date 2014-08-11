@@ -1,6 +1,6 @@
-(defproject com.github.kyleburton/logback-riemann-appender "0.1.4-SNAPSHOT"
+(defproject com.walmartlabs/logback-riemann-appender "0.1.4-SNAPSHOT"
   :description "Logback Appender that sends events to Riemann"
-  :url "https://github.com/kyleburton/logback-riemann-appender"
+  :url "https://github.com/walmartlabs/logback-riemann-appender"
   :lein-release         {:deploy-via :clojars}
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

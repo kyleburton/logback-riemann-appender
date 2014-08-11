@@ -1,4 +1,4 @@
-package com.github.kyleburton.logback;
+package com.walmartlabs.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
