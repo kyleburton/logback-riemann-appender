@@ -6,6 +6,7 @@ import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
 import com.aphyr.riemann.client.EventDSL;
 import com.aphyr.riemann.client.RiemannClient;
+import com.aphyr.riemann.client.SimpleUdpTransport;
 import com.aphyr.riemann.client.SynchronousTransport;
 
 import java.io.IOException;
