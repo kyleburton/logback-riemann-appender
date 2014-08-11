@@ -14,4 +14,5 @@
     [com.aphyr/riemann-java-client  "0.2.8"]
     [ch.qos.logback/logback-classic "1.0.13"]
     [org.clojure/tools.logging      "0.2.6"]
-  ])
+  ]
+  :signing {:gpg-key "dante@walmartlabs.com"})
