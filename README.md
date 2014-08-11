@@ -14,7 +14,18 @@ Forked from: https://github.com/kyleburton/logback-riemann-appender
 
 ## Usage
 
- See `resources/logback.xml` for a full example configuration.
+Artifacts are available through
+[clojars](https://clojars.org/com.walmartlabs/logback-riemann-appender) which you can add
+to your maven repository like so:
+
+```xml
+<repository>
+  <id>clojars.org</id>
+  <url>http://clojars.org/repo</url>
+</repository>
+```
+
+See `resources/logback.xml` for a full example configuration.
 
     <configuration scan="true">
       <appender name="R1" class="com.walmartlabs.logback.RiemannAppender">
