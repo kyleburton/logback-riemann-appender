@@ -5,12 +5,18 @@ Forked from: https://github.com/kyleburton/logback-riemann-appender
 ## Logback appender for [Riemann](http://riemann.io/):
 
 - Sends logging events to Riemann via UDP
-- Sets the `:description` field of the Riemann event to the rendered log message
-- Sets the `:state` field of the Riemann event to the `level` of the log event
-- Sets the `:tags` field of the Riemann event to the name of the Marker on the log event, if it exists
-- Sets an attribute on the Riemann event for every key-value pair in the MDC associated with the log event
-- Sets a `:stacktrace` attribute if an exception is present on the log event
-- Sets a `:logger` attribute to the name of the Logback logger
+- Maps attributes of the log event to a Riemann event as follows:
+
+Log Event                       | Riemann Event
+------------------------------- | -------------
+rendered message                | `:description`
+`level`                         | `:state`
+Marker name                     | added to `:tags`
+each key-value pair in the MDC  | added as a custom attribute
+throwableProxy, if it exists    | custom attribute: `:stacktrace`
+name of the logger              | custom attribute: `:logger`
+
+:host and :service are set via configuring `logback.xml` as below.
 
 ## Usage
 
