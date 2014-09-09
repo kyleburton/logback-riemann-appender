@@ -3,7 +3,7 @@
    [clojure.test :refer :all]
    [clojure.tools.logging :as log])
   (:import
-   [com.github.kyleburton.logback RiemannAppender]))
+   [com.walmartlabs.logback RiemannAppender]))
 
 (deftest test-logging
   (is (= 0 (.get RiemannAppender/timesCalled)))
