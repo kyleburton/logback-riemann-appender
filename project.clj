@@ -6,13 +6,17 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :java-source-paths ["java"]
   :javac-options     ["-target" "1.6" "-source" "1.6" "-Xlint:-options"]
-  :plugins [[lein-release/lein-release "1.0.5"]
+  :junit ["test/java"]
+  :plugins [[lein-junit "1.1.8"]
+            [lein-release/lein-release "1.0.5"]
             [lein-swank                "1.4.5"]]
-  :profiles {:dev {:resource-paths ["dev-resources"]}}
+  :profiles {:dev {:dependencies [[junit/junit "4.11"]]
+                   :resource-paths ["dev-resources"]
+                   :source-paths ["dev" "test/clojure"]
+                   :java-source-paths ["test/java"]}}
   :dependencies [
     [org.clojure/clojure            "1.5.1"]
     [com.aphyr/riemann-java-client  "0.2.8"]
     [ch.qos.logback/logback-classic "1.0.13"]
-    [org.clojure/tools.logging      "0.2.6"]
-  ]
+    [org.clojure/tools.logging      "0.2.6"]]
   :signing {:gpg-key "dante@walmartlabs.com"})

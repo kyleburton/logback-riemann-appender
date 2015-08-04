@@ -9,14 +9,17 @@ Forked from: https://github.com/kyleburton/logback-riemann-appender
 
 Log Event                       | Riemann Event
 ------------------------------- | -------------
-rendered message                | `:description`
-`level`                         | `:state`
-Marker name                     | added to `:tags`
-each key-value pair in the MDC  | added as a custom attribute
-throwableProxy, if it exists    | custom attribute: `:stacktrace`
-name of the logger              | custom attribute: `:logger`
+rendered message                | `:log/message`
+`level`                         | added as a custom attribute: `:log/level`
+Marker name                     | prefixed with `log/` and added to `:tags`
+each key-value pair in the MDC  | added as a custom attribute with key in the `:log` ns
+throwableProxy, if it exists    | custom attribute: `:log/stacktrace`
+name of the logger              | custom attribute: `:log/logger`
 
-:host and :service are set via configuring `logback.xml` as below.
+:host and :service are set via configuring `logback.xml` as below. You
+can also configure `customAttributes` for the logger -- these will be
+added to the Riemann event as custom attributes. Each of the keys of
+the custom attributes will be in the `log` namespace.
 
 ## Usage
 
@@ -39,6 +42,7 @@ See `resources/logback.xml` for a full example configuration.
         <riemannHostname>127.0.0.1</riemannHostname>
         <riemannPort>5555</riemannPort>
         <hostname>graphene</hostname>
+        <customAttributes>application:test-service,datacenter:us-sw</customAttributes>
       </appender>
       <root level="DEBUG">
         <appender-ref ref="R1"/>
