@@ -1,10 +1,12 @@
-# logback-riemann-appender
+# logback-riemann-appender  [![Build Status](https://travis-ci.org/walmartlabs/logback-riemann-appender.svg?branch=master)](https://travis-ci.org/walmartlabs/logback-riemann-appender)
 
 Forked from: https://github.com/kyleburton/logback-riemann-appender
 
-## Logback appender for [Riemann](http://riemann.io/) [![Build Status](https://travis-ci.org/walmartlabs/logback-riemann-appender.svg?branch=master)](https://travis-ci.org/walmartlabs/logback-riemann-appender)
+## Logback appender for [Riemann](http://riemann.io/)
 
 - Sends logging events to Riemann via UDP
+- Supports configurable level-based filtering of log events via the
+  `riemannLogLevel` config property
 - Maps attributes of the log event to a Riemann event as follows:
 
 Log Event                       | Riemann Event
@@ -43,6 +45,7 @@ See `resources/logback.xml` for a full example configuration.
         <riemannPort>5555</riemannPort>
         <hostname>graphene</hostname>
         <customAttributes>application:test-service,datacenter:us-sw</customAttributes>
+		<riemannLogLevel>WARN</riemannLogLevel>
       </appender>
       <root level="DEBUG">
         <appender-ref ref="R1"/>
