@@ -2,7 +2,7 @@
 
 Forked from: https://github.com/kyleburton/logback-riemann-appender
 
-## Logback appender for [Riemann](http://riemann.io/):
+## Logback appender for [Riemann](http://riemann.io/) [![Build Status](https://travis-ci.org/walmartlabs/logback-riemann-appender.svg?branch=master)](https://travis-ci.org/walmartlabs/logback-riemann-appender)
 
 - Sends logging events to Riemann via UDP
 - Maps attributes of the log event to a Riemann event as follows:
