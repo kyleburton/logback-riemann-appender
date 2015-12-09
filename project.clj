@@ -12,8 +12,9 @@
             [lein-swank                "1.4.5"]]
   :profiles {:dev {:dependencies [[junit/junit "4.11"]]
                    :resource-paths ["dev-resources"]
-                   :source-paths ["dev" "test/clojure"]
-                   :java-source-paths ["test/java"]}}
+                   :source-paths ["test/clojure"]
+                   :java-source-paths ["test/java"]}
+             :repl {:source-paths ["dev"]}}
   :dependencies [
     [org.clojure/clojure            "1.5.1"]
     [com.aphyr/riemann-java-client  "0.2.8"]
