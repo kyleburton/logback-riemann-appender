@@ -13,11 +13,10 @@
                    :source-paths ["test/clojure"]
                    :java-source-paths ["test/java"]}
              :repl {:source-paths ["dev"]}}
-  :dependencies [
-    [org.clojure/clojure            "1.7.0"]
-    [com.aphyr/riemann-java-client  "0.2.11"]
-    [ch.qos.logback/logback-classic "1.0.13"]
-    [org.clojure/tools.logging      "0.2.6"]]
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [com.aphyr/riemann-java-client "0.2.11"]
+                 [ch.qos.logback/logback-classic "1.1.3"]
+                 [org.clojure/tools.logging "0.3.1"]]
   :signing {:gpg-key "dante@walmartlabs.com"}
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version" "leiningen.release/bump-version" "release"]
