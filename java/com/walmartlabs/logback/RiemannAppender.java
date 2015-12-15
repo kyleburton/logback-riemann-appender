@@ -98,6 +98,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     return result;
   }
 
+  // Invoked from the Clojure code, but is only used for testing.
   public void forceAppend(E event) {
     append(event);
   }
