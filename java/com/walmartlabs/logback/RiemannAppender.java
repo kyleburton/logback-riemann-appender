@@ -5,10 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
-import com.aphyr.riemann.client.EventDSL;
-import com.aphyr.riemann.client.RiemannClient;
-import com.aphyr.riemann.client.SimpleUdpTransport;
-import com.aphyr.riemann.client.SynchronousTransport;
+import com.aphyr.riemann.client.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,16 +13,17 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RiemannAppender<E> extends AppenderBase<E> {
-  private static final String DEFAULT_PORT = "5555";
-  private static final String DEFAULT_HOST = "localhost";
+  public static final int DEFAULT_PORT = 5555;
+  public static final String DEFAULT_HOST = "localhost";
   private final String className = getClass().getSimpleName();
 
   private String serviceName = "*no-service-name*";
   private Level riemannLogLevel = Level.ERROR;
   private String riemannHostname = DEFAULT_HOST;
-  private String riemannPort = DEFAULT_PORT;
+  private int riemannPort = DEFAULT_PORT;
   private String hostname = "*no-host-name*";
   private Map<String, String> customAttributes = new HashMap<String, String>();
+  private boolean tcp = false;
 
   public static AtomicLong timesCalled = new AtomicLong(0);
 
@@ -38,12 +36,17 @@ public class RiemannAppender<E> extends AppenderBase<E> {
       if (debug) {
         printError("%s.start()", this);
       }
-      SynchronousTransport transport = new SimpleUdpTransport(riemannHostname, Integer.parseInt(riemannPort));
-      riemannClient = new RiemannClient(transport);
+
+      riemannClient = tcp
+              ? RiemannClient.tcp(riemannHostname, riemannPort)
+              : new RiemannClient(new SimpleUdpTransport(riemannHostname, riemannPort));
+
       if (debug) {
         printError("%s.start: connecting", className);
       }
+
       riemannClient.connect();
+
       if (debug) {
         printError("%s.start: connected", className);
       }
@@ -72,9 +75,10 @@ public class RiemannAppender<E> extends AppenderBase<E> {
 
   public String toString() {
     return String.format(
-      "RiemannAppender{hashCode=%s;serviceName=%s;riemannHostname=%s;riemannPort=%s;hostname=%s}",
+      "RiemannAppender{hashCode=%s;serviceName=%s;transport=%s;riemannHostname=%s;riemannPort=%d;hostname=%s}",
       hashCode(),
       serviceName,
+      tcp ? "tcp" : "upd",
       riemannHostname,
       riemannPort,
       hostname);
@@ -204,8 +208,8 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     riemannHostname = s;
   }
 
-  public void setRiemannPort(String s) {
-    riemannPort = s;
+  public void setRiemannPort(int i) {
+    riemannPort = i;
   }
 
   public void setHostname(String s) {
@@ -233,7 +237,18 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     return result;
   }
 
-  public void setDebug(String s) {
-    debug = "true".equals(s);
+  /**
+   * Set to true to enable TCP requests to the Riemann server.  The default, false, is to
+   * use UDP.
+   */
+  public void setTcp(boolean b) {
+    tcp = b;
+  }
+
+  /**
+   * Enable additional logging when setting up the connection, and on each event logged.
+   */
+  public void setDebug(boolean b) {
+    debug = b;
   }
 }

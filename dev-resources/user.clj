@@ -8,14 +8,12 @@
   ([] (make-appender {}))
   ([options]
      (doto (RiemannAppender.)
-       (.setRiemannHostname (or (:riemann-host options)
-                                "localhost"))
-       (.setRiemannPort (or` (:riemann-port options)
-                            "5555"))
+       (.setRiemannHostname (:riemann-host options RiemannAppender/DEFAULT_HOST))
+       (.setRiemannPort (:riemann-port options RiemannAppender/DEFAULT_PORT))
+       (.setTcp (:tcp options false))
        (.setHostname "repl-test-appender")
-       (.setServiceName (or (:service options)
-                            "repl-test-service"))
-       (.setDebug "true")
+       (.setServiceName (:service options "repl-test-service"))
+       (.setDebug true)
        (.start))))
 
 (defn make-marker
