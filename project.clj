@@ -18,6 +18,7 @@
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [org.clojure/tools.logging "0.3.1"]]
   :signing {:gpg-key "dante@walmartlabs.com"}
+  :aliases {"test" ["do", "jar," "test"]}
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version" "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
