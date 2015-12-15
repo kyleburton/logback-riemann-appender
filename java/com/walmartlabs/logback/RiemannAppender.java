@@ -12,9 +12,7 @@ import com.aphyr.riemann.client.SynchronousTransport;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RiemannAppender<E> extends AppenderBase<E> {
