@@ -78,7 +78,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
       "RiemannAppender{hashCode=%s;serviceName=%s;transport=%s;riemannHostname=%s;riemannPort=%d;hostname=%s}",
       hashCode(),
       serviceName,
-      tcp ? "tcp" : "upd",
+      tcp ? "tcp" : "udp",
       riemannHostname,
       riemannPort,
       hostname);
