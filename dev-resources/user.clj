@@ -28,11 +28,11 @@
    (make-event Level/ERROR msg fields))
   ([level msg fields]
    (doto (LoggingEvent. "fully-qualified-class-name"
-                                                   logger
-                                                   level
-                                                   msg
-                                                   nil
-                                                   nil)
+                        logger
+                        level
+                        msg
+                        nil
+                        nil)
      (.setTimeStamp (System/currentTimeMillis))
      (.setMarker (make-marker))
      (.setMDCPropertyMap fields))))
