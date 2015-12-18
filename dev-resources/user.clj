@@ -1,34 +1,38 @@
+(ns user
+  (:import (com.walmartlabs.logback RiemannAppender)
+           (org.slf4j MarkerFactory LoggerFactory)
+           (ch.qos.logback.classic.spi LoggingEvent)
+           (ch.qos.logback.classic Level)))
+
 (defn make-appender
   ([] (make-appender {}))
   ([options]
-     (doto (com.walmartlabs.logback.RiemannAppender.)
-       (.setRiemannHostname (or (:riemann-host options)
-                                "localhost"))
-       (.setRiemannPort (or (:riemann-port options)
-                            "5555"))
+     (doto (RiemannAppender.)
+       (.setRiemannHostname (:riemann-host options RiemannAppender/DEFAULT_HOST))
+       (.setRiemannPort (:riemann-port options RiemannAppender/DEFAULT_PORT))
+       (.setTcp (:tcp options false))
        (.setHostname "repl-test-appender")
-       (.setServiceName (or (:service options)
-                            "repl-test-service"))
-       (.setDebug "true")
+       (.setServiceName (:service options "repl-test-service"))
+       (.setDebug true)
        (.start))))
 
 (defn make-marker
   []
-  (org.slf4j.MarkerFactory/getMarker "repl-marker"))
+  (MarkerFactory/getMarker "repl-marker"))
 
-(def logger (org.slf4j.LoggerFactory/getLogger "repl-logger"))
+(def logger (LoggerFactory/getLogger "repl-logger"))
 
 (defn make-event
   ([msg] (make-event msg {}))
   ([msg fields]
-   (make-event ch.qos.logback.classic.Level/ERROR msg fields))
+   (make-event Level/ERROR msg fields))
   ([level msg fields]
-   (doto (ch.qos.logback.classic.spi.LoggingEvent. "fully-qualified-class-name"
-                                                   logger
-                                                   level
-                                                   msg
-                                                   nil
-                                                   nil)
+   (doto (LoggingEvent. "fully-qualified-class-name"
+                        logger
+                        level
+                        msg
+                        nil
+                        nil)
      (.setTimeStamp (System/currentTimeMillis))
      (.setMarker (make-marker))
      (.setMDCPropertyMap fields))))
