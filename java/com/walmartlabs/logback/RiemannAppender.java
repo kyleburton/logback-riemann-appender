@@ -150,11 +150,17 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   }
 
   private String asString(ILoggingEvent logEvent) {
-    return String.format("LogEvent{level:%s, message:%s, logger:%s, thread:%s",
+    Map<String, String> mdc = logEvent.getMDCPropertyMap();
+    StringBuilder mdcContents = new StringBuilder();
+    for (String key : mdc.keySet()) {
+      mdcContents.append(String.format(", %s:%s", key, mdc.get(key)));
+    }
+    return String.format("{level:%s, message:%s, logger:%s, thread:%s%s}",
                          logEvent.getLevel().toString(),
                          logEvent.getMessage(),
                          logEvent.getLoggerName(),
-                         logEvent.getThreadName());
+                         logEvent.getThreadName(),
+                         mdcContents.toString());
   }
 
   private EventDSL createRiemannEvent(ILoggingEvent logEvent) {
