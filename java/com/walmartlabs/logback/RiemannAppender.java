@@ -5,9 +5,13 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
-import com.aphyr.riemann.client.*;
+import com.aphyr.riemann.client.EventDSL;
+import com.aphyr.riemann.client.RiemannClient;
+import com.aphyr.riemann.client.SimpleUdpTransport;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,9 +23,9 @@ public class RiemannAppender<E> extends AppenderBase<E> {
 
   private String serviceName = "*no-service-name*";
   private Level riemannLogLevel = Level.ERROR;
-  private String riemannHostname = DEFAULT_HOST;
+  private String riemannHostname = determineRiemannHostname();
   private int riemannPort = DEFAULT_PORT;
-  private String hostname = "*no-host-name*";
+  private String hostname = determineHostname();
   private Map<String, String> customAttributes = new HashMap<String, String>();
   private boolean tcp = false;
 
@@ -30,6 +34,28 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   private static boolean debug = false;
 
   private RiemannClient riemannClient = null;
+
+  private String determineRiemannHostname() {
+    String rhn = System.getProperty("riemann.hostname");
+    if (rhn == null) {
+      return DEFAULT_HOST;
+    } else {
+      return rhn;
+    }
+  }
+
+  private String determineHostname() {
+    String hn = System.getProperty("hostname");
+    if (hn == null) {
+      try {
+        return InetAddress.getLocalHost().getHostName();
+      } catch (UnknownHostException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      return hn;
+    }
+  }
 
   public void start() {
     try {
@@ -47,9 +73,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
 
       riemannClient.connect();
 
-      if (debug) {
-        printError("%s.start: connected", className);
-      }
+      printError("%s.start: connected to %s, using hostname of %s", className, riemannHostname, hostname);
     } catch (IOException ex) {
       if (debug) {
         printError("%s: Error initializing: %s", className, ex);

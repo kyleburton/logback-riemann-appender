@@ -2,17 +2,16 @@ package com.walmartlabs.logback;
 
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.*;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
 import org.junit.Test;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
-import java.util.HashMap;
+import java.net.InetAddress;
 import java.util.Map;
+import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.*;
 
 public class RiemannAppenderTest {
 
@@ -60,6 +59,47 @@ public class RiemannAppenderTest {
     assertTrue(appender.isMinimumLevel(errorEvent));
   }
 
+  @Test
+  public void hostnameShouldDefaultToAddressOfLocalMachine() throws Exception {
+    String hostname = InetAddress.getLocalHost().getHostName();
+    RiemannAppender<ILoggingEvent> appender = new RiemannAppender<ILoggingEvent>();
+    assertThat(appender.toString(), containsString("hostname=" + hostname));
+  }
+
+  @Test
+  public void hostnameShouldBeOverridableViaSystemProperty() throws Exception {
+    String hostname = UUID.randomUUID().toString();
+    System.setProperty("hostname", hostname);
+    RiemannAppender<ILoggingEvent> appender = new RiemannAppender<ILoggingEvent>();
+    assertThat(appender.toString(), containsString("hostname=" + hostname));
+  }
+
+  @Test
+  public void hostnamePropertyShouldOverrideDefaultAndSystemProperty() throws Exception {
+    String hostname = UUID.randomUUID().toString();
+    System.setProperty("hostname", hostname);
+    RiemannAppender<ILoggingEvent> appender = new RiemannAppender<ILoggingEvent>();
+    String hostnameProperty = UUID.randomUUID().toString();
+    appender.setHostname(hostnameProperty);
+    assertThat(appender.toString(), containsString("hostname=" + hostnameProperty));
+  }
+
+  @Test
+  public void riemannHostnameShouldDefaultToLocalhost() throws Exception {
+    RiemannAppender<ILoggingEvent> appender = new RiemannAppender<ILoggingEvent>();
+    assertThat(appender.toString(), containsString("riemannHostname=localhost"));
+  }
+
+  @Test
+  public void riemannHostnameShouldBeOverridableViaSystemProperty() throws Exception {
+    String riemannHostname = UUID.randomUUID().toString();
+    System.setProperty("riemann.hostname", riemannHostname);
+    RiemannAppender<ILoggingEvent> appender = new RiemannAppender<ILoggingEvent>();
+    String riemannHostnameProperty = UUID.randomUUID().toString();
+    appender.setRiemannHostname(riemannHostnameProperty);
+    assertThat(appender.toString(), containsString("riemannHostname=" + riemannHostnameProperty));
+  }
+
   private Map<String, String> getCustomAttributes(String attributeString) {
     return new RiemannAppender<ILoggingEvent>().parseCustomAttributes(attributeString);
   }
@@ -75,5 +115,4 @@ public class RiemannAppenderTest {
   private static class TestInfoEvent extends LoggingEvent {
     public Level getLevel() { return Level.INFO; }
   }
-
 }
