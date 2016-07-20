@@ -36,12 +36,7 @@ public class RiemannAppender<E> extends AppenderBase<E> {
   private RiemannClient riemannClient = null;
 
   private String determineRiemannHostname() {
-    String rhn = System.getProperty("riemann.hostname");
-    if (rhn == null) {
-      return DEFAULT_HOST;
-    } else {
-      return rhn;
-    }
+    return System.getProperty("riemann.hostname", DEFAULT_HOST);
   }
 
   private String determineHostname() {
