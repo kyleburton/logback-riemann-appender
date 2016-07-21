@@ -1,4 +1,4 @@
-(defproject com.walmartlabs/logback-riemann-appender "0.1.6-SNAPSHOT"
+(defproject com.walmartlabs/logback-riemann-appender "0.1.5"
   :description "Logback Appender that sends events to Riemann"
   :url "https://github.com/walmartlabs/logback-riemann-appender"
   :license {:name "Eclipse Public License"
