@@ -5,7 +5,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
+import com.aphyr.riemann.Proto;
 import com.aphyr.riemann.client.EventDSL;
+import com.aphyr.riemann.client.IPromise;
 import com.aphyr.riemann.client.RiemannClient;
 import com.aphyr.riemann.client.SimpleUdpTransport;
 
@@ -83,11 +85,8 @@ public class RiemannAppender<E> extends AppenderBase<E> {
       printError("%s.stop()", this);
     }
     if (riemannClient != null) {
-      try {
-        riemannClient.disconnect();
-      } catch (IOException ex) {
-        // do nothing, it's ok
-      }
+
+      riemannClient.close();
     }
     super.stop();
   }
@@ -130,6 +129,8 @@ public class RiemannAppender<E> extends AppenderBase<E> {
     return logEvent.getLevel().isGreaterOrEqual(riemannLogLevel);
   }
 
+  protected final static int MAX_ATTEMPTS = 2;
+
   protected synchronized void append(E event) {
     timesCalled.incrementAndGet();
     ILoggingEvent logEvent = (ILoggingEvent) event;
@@ -140,26 +141,46 @@ public class RiemannAppender<E> extends AppenderBase<E> {
 
     if (isMinimumLevel(logEvent)) {
       EventDSL rEvent = createRiemannEvent(logEvent);
-      try {
-        try {
-          if (debug) {
-            printError("%s.append: sending riemann event: %s", className, rEvent);
-          }
-          rEvent.send();
-          if (debug) {
-            printError("%s.append(logEvent): sent to riemann %s:%s", className, riemannHostname, riemannPort);
-          }
-        } catch (Exception ex) {
-          if (debug) {
-            printError("%s: Error sending event %s", this, ex);
-            ex.printStackTrace(System.err);
-          }
 
-          riemannClient.reconnect();
-          rEvent.send();
-        }
-      } catch (Exception ex) {
-        // do nothing
+      if (debug) {
+        printError("%s.append: sending riemann event: %s", className, rEvent);
+      }
+
+      try {
+
+        int attempt = 0;
+        while (true) {
+          try {
+            if (++attempt > 1) {
+              riemannClient.reconnect();
+            }
+
+            Proto.Msg ack = rEvent.send().deref();
+
+            if (!ack.getOk()) {
+              throw new IOException("Error from Riemann server: " + ack.getError());
+            }
+
+            if (debug) {
+              printError("%s.append(logEvent): sent to riemann %s:%s", className, riemannHostname, riemannPort);
+            }
+
+            break;
+
+          } catch (Exception ex) {
+            if (debug) {
+              printError("%s: Error sending event %s", this, ex);
+            }
+
+            if (attempt < MAX_ATTEMPTS) {
+              continue;
+            }
+
+            throw new IOException(ex.getMessage(), ex);
+          }
+        } // retry loop
+      } catch (IOException ex) {
+        // Failure after retries exhausted:
         if (debug) {
           printError("%s.append: Error during append(): %s", className, ex);
           ex.printStackTrace(System.err);
